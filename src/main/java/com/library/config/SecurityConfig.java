@@ -17,6 +17,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/books/**").permitAll()
+                        .requestMatchers("/api/borrowed-books/**").permitAll()
                         .anyRequest().authenticated() // Authenticate all other requests
                 )
                 .httpBasic(withDefaults()); // Enable Basic Authentication
