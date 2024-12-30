@@ -18,6 +18,10 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
   thymeleaf:
     cache: false
+  security:
+    user:
+      name: root
+      password: root
 
 logging:
   level:
