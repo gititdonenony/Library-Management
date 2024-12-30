@@ -1,6 +1,7 @@
 package com.library.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
@@ -11,12 +12,17 @@ public class BorrowedBook {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "User cannot be null")
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
+    @NotNull(message = "Book cannot be null")
     @ManyToOne
+    @JoinColumn(name = "book_id")
     private Book book;
 
+    @NotNull(message = "Borrow date cannot be null")
     private LocalDate borrowDate;
 
     private LocalDate returnDate;
