@@ -6,6 +6,7 @@ import com.library.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<?> getBookById(@PathVariable Long id) {
         try {
             BookResponse bookResponse = bookService.getBookById(id);
@@ -40,6 +42,7 @@ public class BookController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<?> getAllBooks() {
         try {
             List<BookResponse> books = bookService.getAllBooks();
@@ -50,6 +53,7 @@ public class BookController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> updateBook(@PathVariable Long id, @RequestBody BookRequest bookRequest) {
         try {
             BookResponse bookResponse = bookService.updateBook(id, bookRequest);
@@ -60,6 +64,7 @@ public class BookController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> deleteBook(@PathVariable Long id) {
         try {
             bookService.deleteBook(id);

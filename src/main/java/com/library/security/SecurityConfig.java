@@ -42,6 +42,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/users/{id}").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/users/{id}").hasAuthority("ADMIN")
 
+                        .requestMatchers(HttpMethod.POST, "/api/books").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/books/{id}").hasAnyAuthority("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.GET, "/api/books").hasAnyAuthority("ADMIN", "USER")  // Protected GET all users endpoint
+                        .requestMatchers(HttpMethod.PUT, "/api/books/{id}").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/books/{id}").hasAuthority("ADMIN")
+
+
                         .anyRequest().authenticated() // Protect all other endpoints
                 )
                 .sessionManagement(sess -> sess
