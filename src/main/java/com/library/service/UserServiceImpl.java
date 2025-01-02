@@ -5,8 +5,8 @@ import com.library.dto.UserResponse;
 import com.library.entity.User;
 import com.library.exception.ResourceNotFoundException;
 import com.library.repository.UserRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,20 +16,24 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
-        this.userRepository = userRepository;
-        this.modelMapper = modelMapper;
-    }
+    private final PasswordEncoder passwordEncoder;
 
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
     @Override
     public UserResponse createUser(UserRequest userRequest) {
         try {
-            User user = modelMapper.map(userRequest, User.class);
+            User user = new User();
+            user.setUsername(userRequest.getUsername());
+            user.setPassword(userRequest.getPassword()); // Hash the password in real-world apps
+            user.setEmail(userRequest.getEmail());
+            user.setRoles(userRequest.getRole());
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             user = userRepository.save(user);
-            return modelMapper.map(user, UserResponse.class);
-        } catch (Exception ex) {
+            return new UserResponse(user.getId(), user.getUsername(), user.getEmail(), user.getRoles());        } catch (Exception ex) {
             throw new RuntimeException("Error creating user: " + ex.getMessage());
         }
     }
@@ -39,9 +43,7 @@ public class UserServiceImpl implements UserService {
         try {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new ResourceNotFoundException("User with ID " + userId + " not found"));
-            return modelMapper.map(user, UserResponse.class);
-        } catch (ResourceNotFoundException ex) {
-            throw ex;
+            return new UserResponse(user.getId(), user.getUsername(), user.getEmail(), user.getRoles());
         } catch (Exception ex) {
             throw new RuntimeException("Error retrieving user: " + ex.getMessage());
         }
@@ -52,7 +54,7 @@ public class UserServiceImpl implements UserService {
         try {
             List<User> users = userRepository.findAll();
             return users.stream()
-                    .map(user -> modelMapper.map(user, UserResponse.class))
+                    .map(user -> new UserResponse(user.getId(), user.getUsername(), user.getEmail(), user.getRoles()))
                     .collect(Collectors.toList());
         } catch (Exception ex) {
             throw new RuntimeException("Error retrieving users: " + ex.getMessage());
@@ -62,13 +64,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse updateUser(Long userId, UserRequest userRequest) {
         try {
+            // Retrieve the existing user
             User existingUser = userRepository.findById(userId)
                     .orElseThrow(() -> new ResourceNotFoundException("User with ID " + userId + " not found"));
 
-            modelMapper.map(userRequest, existingUser);
+            // Manually copy fields from UserRequest to existingUser
+            existingUser.setUsername(userRequest.getUsername());
+            existingUser.setPassword(userRequest.getPassword()); // Hash the password in a real-world app
+            existingUser.setEmail(userRequest.getEmail());
+
+            existingUser.setRoles(userRequest.getRole());
+            // Save the updated user
             existingUser = userRepository.save(existingUser);
 
-            return modelMapper.map(existingUser, UserResponse.class);
+            // Create and return a UserResponse manually
+            return new UserResponse(existingUser.getId(), existingUser.getUsername(), existingUser.getEmail(), existingUser.getRoles());
         } catch (ResourceNotFoundException ex) {
             throw ex;
         } catch (Exception ex) {
@@ -89,4 +99,3 @@ public class UserServiceImpl implements UserService {
         }
     }
 }
-

@@ -1,9 +1,8 @@
 server:
   port: 8080
-  servlet:
-    context-path: /library
-
 spring:
+  main:
+    allow-circular-references: true
   datasource:
     url: jdbc:mysql://localhost:3306/library_db
     username: root
@@ -22,6 +21,10 @@ spring:
     user:
       name: root
       password: root
+
+jwt:
+  secret: 493eebe03de82baf7979fdaf387a9f6838036e59ac5351eed979f360cdd62e5bb213675a7327134631944bb278091aa22803044397d564e0ff9dd8bd8313c39cdd12c9de54851772f879fa11c48660c6bd431dd25a9a4ce5ddd6e85a2a0de563d9608db1ddd36f9276448b0e356eb38f04cfb1777b81d2536bcedc6d081b127ad3f31af044c47834ff544e962125c151c3d98804e27a446eb8e4434967c6218511ac827fccc22aae908d2b2262f7ace525baeebcd9f84f1dd2af9eedb8a8d17bfa0ede8bb04ba8fdd840306f494ef5d1c91ec38c4f0ba47ddeca7668e7d3658ad15dcd98fa3f23c2b5fbc0b217c025b53c0ddaeb0f222061c52a80824faed10f
+  expiration: 1800000  # JWT expiration time in milliseconds (30 minutes)
 
 logging:
   level:
