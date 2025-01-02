@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.List;
 
         // Endpoint to borrow a book
         @PostMapping
+        @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
         public ResponseEntity<BorrowedBookResponse> borrowBook(@RequestBody BorrowedBookRequest borrowedBookRequest) {
             try {
                 logger.info("Borrowing book with request: {}", borrowedBookRequest);
@@ -41,6 +43,7 @@ import java.util.List;
         }
 
         @PostMapping("{bookId}")
+        @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
         public ResponseEntity<BorrowedBookResponse> returnBook(@PathVariable long bookId) {
             try {
                 logger.info("Returning book with ID: {}", bookId);
@@ -56,6 +59,7 @@ import java.util.List;
         }
 
         @GetMapping("/{userId}")
+        @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
         public ResponseEntity<List<BorrowedBookResponse>> getAllBorrowedBooksByUser(@PathVariable Long userId) {
             try {
                 logger.info("Fetching all borrowed books for user ID: {}", userId);
